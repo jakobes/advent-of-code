@@ -1,11 +1,6 @@
 using DelimitedFiles
 using Printf
-
-input_array = readdlm("input.txt", ' ', Int, '\n')
-input_array1 = [1, -1]              # 0
-input_array2 = [3, 3, 4, -2, -4]    # 10
-input_array3 = [-6, 3, 8, 5, -6]    # 5
-input_array4 = [7, 7, -2, -7, -4]    # 14
+using Test
 
 
 mutable struct FrequencyState
@@ -29,19 +24,36 @@ function find_first_duplicate(state::FrequencyState, input_frequency::Int)
 end
 
 
-fstate = FrequencyState(0, [0])
-for (numiter, v) in enumerate(Iterators.cycle(input_array))
-    global fstate
-    a, fstate = find_first_duplicate(fstate, v)
+function calibrate(input_array::Array{Int, 1}, maxiter::Int64=Int(1e8))
+    fstate = FrequencyState(0, [0])
+    for (numiter, v) in enumerate(Iterators.cycle(input_array))
+        # global fstate
+        success, fstate = find_first_duplicate(fstate, v)
 
-    if a
-        println(fstate.current_state)
-        @printf("Success after %d iterations!", numiter)
-        break
-    end
+        if success
+            return fstate.current_state
+        end
 
-    if numiter == Int(1e8)
-        @printf("Failure after %d iterations!", numiter)
-        break
+        if numiter == maxiter
+            break
+        end
     end
 end
+
+
+input_array1 = [1, -1]
+input_array2 = [3, 3, 4, -2, -4]
+input_array3 = [-6, 3, 8, 5, -6]
+input_array4 = [7, 7, -2, -7, -4]
+
+
+@test calibrate(input_array1) == 0
+@test calibrate(input_array2) == 10
+@test calibrate(input_array3) == 5
+@test calibrate(input_array4) == 14
+
+
+# Evaluate on real input
+input_array = readdlm("input.txt", ' ', Int, '\n')
+foo = calibrate(input_array[:])
+println(foo)
