@@ -1,37 +1,23 @@
 using DelimitedFiles
 using Printf
 using Test
+using Base.Iterators
 
 
-mutable struct FrequencyState
-    current_state::Int
-    unique_states::Array{Int, 1}
-end
-
-
-function find_first_duplicate(state::FrequencyState, input_frequency::Int)
-    # Update current state
-    current_state = state.current_state + input_frequency
-
-    retval = false
-    if (current_state in state.unique_states)
-        retval = true
+function my_push!(input_array::Array{Int, 1}, value::Int)
+    if value in input_array
+        return false
     end
-
-    # Update list of previous states
-    push!(state.unique_states, current_state)
-    return (retval, FrequencyState(current_state, state.unique_states))
+    push!(input_array, value)
+    return true
 end
 
 
 function calibrate(input_array::Array{Int, 1}, maxiter::Int64=Int(1e8))
-    fstate = FrequencyState(0, [0])
-    for (numiter, v) in enumerate(Iterators.cycle(input_array))
-        # global fstate
-        success, fstate = find_first_duplicate(fstate, v)
-
-        if success
-            return fstate.current_state
+    seen = [0]
+    for (numiter, v) in enumerate(cycle(input_array))
+        if !my_push!(seen, v + seen[end])
+            return v + seen[end]
         end
 
         if numiter == maxiter
@@ -53,7 +39,5 @@ input_array4 = [7, 7, -2, -7, -4]
 @test calibrate(input_array4) == 14
 
 
-# Evaluate on real input
-input_array = readdlm("input.txt", ' ', Int, '\n')
-foo = calibrate(input_array[:])
-println(foo)
+input_array = readdlm("input.txt", ' ', Int, '\n')[:]
+println(calibrate(input_array))
