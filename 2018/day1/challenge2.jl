@@ -4,7 +4,7 @@ using Test
 using Base.Iterators
 
 
-function my_push!(input_array::Array{Int, 1}, value::Int)
+function my_push!(input_array::Set{Int}, value::Int)
     if value in input_array
         return false
     end
@@ -14,10 +14,12 @@ end
 
 
 function calibrate(input_array::Array{Int, 1}, maxiter::Int64=Int(1e8))
-    seen = [0]
+    seen = Set(0)       # Set has significantly faster look up than array
+    current_value = 0
     for (numiter, v) in enumerate(cycle(input_array))
-        if !my_push!(seen, v + seen[end])
-            return v + seen[end]
+        current_value += v
+        if !my_push!(seen, current_value)
+            return current_value
         end
 
         if numiter == maxiter
