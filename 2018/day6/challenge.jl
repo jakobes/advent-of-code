@@ -33,7 +33,7 @@ function fill_in_grid(compute_distance, coordinates::Array{Int, 2})
     xmax, ymax = maximum(coordinates, dims=1)
     xmin, ymin = minimum(coordinates, dims=1)
 
-    grid = zeros(Int, (xmax - xmin + 2000, ymax - ymin + 2000))
+    grid = zeros(Int, (xmax, ymax))
 
     for i in 1:size(grid)[1]
         for j in 1:size(grid)[2]
