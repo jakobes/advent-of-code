@@ -19,7 +19,7 @@ function grow_plants(
     num_generations::Int,
     padding::Int = 0
 )::Vector{Int}
-    pots = initial_state
+    pots = copy(initial_state)
     if padding > 0
         prepend!(pots, zeros(Int, padding))
         append!(pots, zeros(Int, padding))
@@ -96,8 +96,23 @@ pots = grow_plants(initial_state, rules, 20, 5)
 @test compute_sum(pots, 5) == 325
 
 
+# Partt 1
 initial_state, rules = read_file()
-offset = 100
-pots = grow_plants(initial_state, rules, 20, offset)
+offset = 50
+pots = grow_plants(initial_state, rules, 0, offset)
+@show pots
 pot_sum = compute_sum(pots, offset)
 @show pot_sum
+
+
+# # Part 2
+# initial_state, rules = read_file()
+# offset = 300
+# prev_sum = 0
+# for i in 1:200
+#     global prev_sum
+#     pots = grow_plants(initial_state, rules, i, offset)
+#     pot_sum = compute_sum(pots, offset)
+#     @show i, pot_sum, pot_sum - prev_sum
+#     prev_sum = pot_sum
+# end
