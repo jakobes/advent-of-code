@@ -1,9 +1,7 @@
 using DelimitedFiles
-using DataStructures
 
 
 function parse_map(string_map)
-    # tree_map = Dict{Tuple{Int,Int}, Char}()
     tree_map = Set{Tuple{Int, Int}}()
     for i in 1:length(string_map)
         for j in 1:length(string_map[i])
