@@ -1,0 +1,49 @@
+using Test
+
+
+function print_map(dot_dict)
+    for j = 0:14
+        for i = 0:10
+            character = get(dot_dict, [i, j], '.')
+            print(character)
+        end
+        println()
+    end
+end
+
+
+
+
+
+f = open("test_input.txt", "r")
+
+# pattern = r"(\d+),(\d+)"
+# pattern = r"([xy])=(\d+)"
+pattern = r"(\d+),(\d+)|([xy])=(\d+)"
+
+fold_instructions = Array[]
+dot_dict = Dict{Array{Int, 1}, Char}()
+
+while !eof(f)
+    line = readline(f)
+    matches = match(pattern, line)
+    if matches == nothing
+        continue
+    elseif matches.captures[1] != nothing
+        dot_dict[map(x -> parse(Int, x), matches.captures[1:2])] = '#'
+        # push!(dot_set, )
+    elseif matches.captures[3] != nothing
+        push!(fold_instructions, [matches.captures[3], parse(Int, matches.captures[4])])
+    else
+        @test false
+    end
+
+    @show matches.captures
+    # if matches[1].captures == "x" || matches[1].captures == "y"
+    #     @show matches.captures
+    # end
+end
+
+close(f)
+
+print_map(dot_dict)
