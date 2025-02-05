@@ -2,7 +2,7 @@ use std::collections::HashMap;
 use std::fs::File;
 use std::io::{BufRead, BufReader};
 
-fn load_data(filename: &str) -> Result<(Vec<i32>, Vec<i32>), std::io::Error> {
+fn parse_input(filename: &str) -> Result<(Vec<i32>, Vec<i32>), std::io::Error> {
     let file = File::open(filename)?;
     let reader = BufReader::new(file);
 
@@ -54,16 +54,24 @@ fn count_list_totals(list2: &[i32]) -> HashMap<i32, i32> {
 }
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let Ok((list1, list2)) = load_data("../test_input.txt") else {
-        todo!()
+    let is_test = false;
+
+    let input_data = if is_test {
+        "input_data/test_input.txt"
+    } else {
+        "input_data/input.txt"
     };
 
+    let (list1, list2) = parse_input(input_data)?;
+    let start = std::time::Instant::now();
+
     let total_distance = calculate_total_distance(&list1, &list2);
-    println!("Total distance: {}", total_distance);
+    println!("Part 1: {total_distance}");
 
     let right_list_totals = count_list_totals(&list2);
     let similarity_score = calculate_similarity_score(&list1, &right_list_totals);
-    println!("Similarity score: {}", similarity_score);
+    println!("Part 2: {similarity_score}");
 
+    println!("Time: {:?}", start.elapsed());
     Ok(())
 }
