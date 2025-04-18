@@ -32,7 +32,9 @@ fn part2(input: &str) -> Result<Vec<u32>> {
     let mut include = true;
 
     for caps in regex.captures_iter(input) {
-        match (caps.get(1), caps.get(2), caps.get(3)) {
+        let (cap1, cap2, cap3) = (caps.get(1), caps.get(2), caps.get(3));
+
+        match (cap1, cap2, cap3) {
             (Some(a), Some(b), _) if include => {
                 let x = a
                     .as_str()
@@ -44,15 +46,48 @@ fn part2(input: &str) -> Result<Vec<u32>> {
                     .context("Failed to parse number")?;
                 results.push(x * y);
             }
+            (Some(_), Some(_), _) if !include => {
+                // Matching pattern but skipped due to include flag
+                // You can optionally log here if desired
+            }
             (_, _, Some(do_call)) => match do_call.as_str() {
                 "do()" => include = true,
                 "don't()" => include = false,
                 other => return Err(anyhow!("Unexpected do-call: {}", other)),
             },
-            _ => return Err(anyhow!("Unexpected match structure")),
+            _ => {
+                return Err(anyhow!(
+                    "Unexpected captures: cap1={:?}, cap2={:?}, cap3={:?}",
+                    cap1.map(|m| m.as_str()),
+                    cap2.map(|m| m.as_str()),
+                    cap3.map(|m| m.as_str())
+                ));
+            }
         }
     }
 
+    //     for caps in regex.captures_iter(input) {
+    //         match (caps.get(1), caps.get(2), caps.get(3)) {
+    //             (Some(a), Some(b), _) if include => {
+    //                 let x = a
+    //                     .as_str()
+    //                     .parse::<u32>()
+    //                     .context("Failed to parse number")?;
+    //                 let y = b
+    //                     .as_str()
+    //                     .parse::<u32>()
+    //                     .context("Failed to parse number")?;
+    //                 results.push(x * y);
+    //             }
+    //             (_, _, Some(do_call)) => match do_call.as_str() {
+    //                 "do()" => include = true,
+    //                 "don't()" => include = false,
+    //                 other => return Err(anyhow!("Unexpected do-call: {}", other)),
+    //             },
+    //             unexpected => return Err(anyhow!("Unexpected match structure: {:?}", unexpected)),
+    //         }
+    //     }
+    //
     Ok(results)
 }
 
@@ -72,7 +107,7 @@ fn main() -> Result<()> {
 
     match part2(input.as_str()) {
         Ok(results) => {
-            println!("Ok!");
+            println!("Total sum: {}", results.iter().sum::<u32>());
             Ok(())
         }
         Err(err) => {
